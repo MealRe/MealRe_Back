@@ -5,8 +5,18 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 from urllib.request import urlopen
 import csv
+import pymysql
 
-url1 = f"https://www.oasis.co.kr/product/list?categoryId=793&page="
+db = pymysql.connect(host='172.31.35.173', port=3306, user='mealRe',
+password='Mealre2022!', db='oasis', charset='utf8')
+
+cur = db.cursor()
+
+sql = 'insert into oasisKor(indexNum, Name, DRate, DPrice, Oprice) values(%, %, %, %, %)'
+
+# 한식: 795
+
+url1 = f"https://www.oasis.co.kr/product/list?categoryId=795&page="
 url2 = f"&sort=priority&direction=desc&couponType=&rows=60"
 
 filename = 'oasis.csv'
@@ -93,8 +103,11 @@ for i in range (1, 6):
 
 for i in itemInfo:
      writer.writerow(i)
+     cur.execute(sql, tuple(itemInfo.values[i]))
 
     #print(num)
 
 f.close()
 
+db.commit()
+db.close()
