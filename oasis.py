@@ -5,19 +5,20 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 from urllib.request import urlopen
 import csv
+import pandas as pd
 import pymysql
 
-db = pymysql.connect(host='172.31.35.173', port=3306, user='mealRe',
-password='Mealre2022!', db='oasis', charset='utf8')
+#db = pymysql.connect(host='172.31.35.173', port=3306, user='mealRe',
+#password='Mealre2022!', db='oasis', charset='utf8')
 
-cur = db.cursor()
+#cur = db.cursor()
 
-sql = 'insert into oasisKor(indexNum, Name, DRate, DPrice, Oprice) values(%, %, %, %, %)'
+#sql = 'insert into oasisKor(indexNum, Name, DRate, DPrice, Oprice) values(%, %, %, %, %)'
 
 # 한식: 795
 
 url1 = f"https://www.oasis.co.kr/product/list?categoryId=795&page="
-url2 = f"&sort=priority&direction=desc&couponType=&rows=60"
+url2 = f"&sort=launchingDt&direction=desc&couponType=&rows=60"
 
 filename = 'oasis.csv'
 f = open(filename, 'w', encoding='utf-8', newline='')
@@ -42,23 +43,22 @@ pageCount = soup.select('.pagingWrap a span')
 pageNum = 1
 for i in pageCount:
     pageNum += 1
-#print(pageNum)
+print(pageNum)
 
 itemInfo = []
-itemIndex = ["인덱스", "상품명", "할인율", "할인가", "원가"]
+itemIndex = ["인덱스", "상품명", "할인율", "할인가", "원가", "이미지"]
 itemInfo.append(itemIndex)
 
 indexNum = 0
 
 # rows 가져오기
-for i in range (1, 6):
-    print(i)
-    html = urlopen(url1 +str(i)+url2).read()
-    print(url1 + str(i) + url2)
+for page in range (1, pageNum):
+    html = urlopen(url1 +str(page)+url2).read()
 
     soup = BeautifulSoup(html, 'html.parser')
 
     total = soup.select('.wrapInfo')
+    itemImage = soup.select('.oPrdtLst .wrapImg img')
     itemName = soup.select('.wrapInfo .info_title .innerBox .inner a')
     itemDRate = soup.select('.wrapInfo .info_price .price_discountRate')
     itemDPrice = soup.select('.wrapInfo .info_price .price_discount b')
@@ -66,6 +66,9 @@ for i in range (1, 6):
     #itemReview = soup.select('.info_group .info_reviewLike')
 
     num = 0
+    img = itemImage[0].get("src")
+    print(img)
+
     
     for i in total:
         temp = []
@@ -90,6 +93,8 @@ for i in range (1, 6):
         item = item.replace('\n', "")
         item = item.replace('\t', "")
         temp.append(item)
+        item = itemImage[num].get("src")
+        temp.append(item)
         """item = itemReview[num].get_text()
         item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
         item = item.replace('\n', "")
@@ -99,15 +104,28 @@ for i in range (1, 6):
         indexNum = indexNum + 1
 
         itemInfo.append(temp)
-    
+
+
+
+"""for i in range(len(itemInfo)):
+    dbData = []
+    for j in range(len(itemInfo[i])):
+        dbData.append(itemInfo[i][j])
+    cur.execute(sql, tuple(dbData.values[i]))"""
+        
 
 for i in itemInfo:
      writer.writerow(i)
-     cur.execute(sql, itemInfo.values[i])
+     #cur.execute(sql, itemInfo.values[i])
 
     #print(num)
 
 f.close()
 
-db.commit()
-db.close()
+"""dbData = pd.read_csv("oasis.csv")
+for i in range(len(dbData)):
+    cur.execue(sql, tuple(dbData.values[i]))
+
+#db.commit()
+#db.close()
+"""
