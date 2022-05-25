@@ -12,7 +12,7 @@ import csv
 url1 = f"https://www.oasis.co.kr/product/list?categoryId=793&page="
 url2 = f"&sort=priority&direction=desc&couponType=&rows=60"
 
-filename = 'oasis.csv'
+filename = 'oasis_copy.csv'
 f = open(filename, 'w', encoding='utf-8', newline='')
 writer = csv.writer(f)
 

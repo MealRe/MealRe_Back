@@ -38,9 +38,13 @@ itemInfo = []
 itemIndex = ["인덱스", "상품명", "할인율", "할인가", "원가"]
 itemInfo.append(itemIndex)
 
+indexNum = 0
+
 # rows 가져오기
-for page in range (1, pageNum):
-    html = urlopen(url1 +str(page)+url2).read()
+for i in range (1, 6):
+    print(i)
+    html = urlopen(url1 +str(i)+url2).read()
+    print(url1 + str(i) + url2)
 
     soup = BeautifulSoup(html, 'html.parser')
 
@@ -50,12 +54,12 @@ for page in range (1, pageNum):
     itemDPrice = soup.select('.wrapInfo .info_price .price_discount b')
     itemOPrice = soup.select('.wrapInfo .info_price .price_original b')
     #itemReview = soup.select('.info_group .info_reviewLike')
-    
-    num = 0
 
+    num = 0
+    
     for i in total:
         temp = []
-        temp.append(num)
+        temp.append(indexNum)
         item = itemName[num].get_text()
         item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
         item = item.replace('\n', "")
@@ -81,13 +85,14 @@ for page in range (1, pageNum):
         item = item.replace('\n', "")
         item = item.replace('\t', "")
         temp.append(item)"""
-        itemInfo.append(temp)
         num = num + 1
-    
-    #print(itemInfo)
+        indexNum = indexNum + 1
 
-    for i in itemInfo:
-        writer.writerow(i)
+        itemInfo.append(temp)
+    
+
+for i in itemInfo:
+     writer.writerow(i)
 
     #print(num)
 
