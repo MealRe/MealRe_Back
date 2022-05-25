@@ -103,7 +103,7 @@ for i in range (1, 6):
 
 for i in itemInfo:
      writer.writerow(i)
-     cur.execute(sql, tuple(itemInfo.values[i]))
+     cur.execute(sql, itemInfo.values[i])
 
     #print(num)
 
