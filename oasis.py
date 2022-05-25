@@ -15,112 +15,126 @@ import pymysql
 
 #sql = 'insert into oasisKor(indexNum, Name, DRate, DPrice, Oprice) values(%, %, %, %, %)'
 
-# 한식: 795
+"""
+가정간편식
+    간편식사: 57
+    아침식사대용: 60
+    베스트야식: 87
+    엄마표 간식: 91
+    국/탕/찌개: 33
+    죽/스프/카레: 54
 
-url1 = f"https://www.oasis.co.kr/product/list?categoryId=795&page="
-url2 = f"&sort=launchingDt&direction=desc&couponType=&rows=60"
+간식/유제품
+    떡/빵/한과/엿: 248
+    시리얼: 249
 
-filename = 'oasis.csv'
-f = open(filename, 'w', encoding='utf-8', newline='')
-writer = csv.writer(f)
+농산
+    채소/샐러드: 137
+"""
+
+categoryList = [57, 60, 87, 91, 33, 54, 248, 249, 137]
+
+url1 = f"https://www.oasis.co.kr/product/list?categoryId="
+url2 = f"&page="
+url3 = f"&sort=priority&direction=desc&couponType=&rows=60"
+
+filenameList = []
+for i in range(len(categoryList)):
+    filename = "oasis" + str(i) + ".csv"
+    filenameList.append(filename)
 
 # table
-oasis = requests.get(url1+"1"+url2)
-soup = BeautifulSoup(oasis.content, "html.parser")
-#table = soup.find('table', attrs={'class':'type_2'})
 
+for k in range(0, len(categoryList)):
+    f = open(filenameList[k], 'w', encoding='utf-8', newline='')
+    writer = csv.writer(f)
 
-"""# table row 가져오기
-title_rows = table.find('thead').find_all('th')
-titles = [title_row.get_text() for title_row in title_rows]
+    oasis = requests.get(url1 + str(categoryList[k]) + url2 + "1" + url3)
+    soup = BeautifulSoup(oasis.content, "html.parser")
 
-# print(titles)
-writer.writerow(titles)"""
+    #print(url1 + str(categoryList[k]) + url2 + "1" + url3)
 
-#print(url1 + '1' +url2)
+    pageCount = soup.select('.pagingWrap a span')
+    pageNum = 1
+    for j in pageCount:
+        pageNum += 1
 
-pageCount = soup.select('.pagingWrap a span')
-pageNum = 1
-for i in pageCount:
-    pageNum += 1
-print(pageNum)
+    itemInfo = []
+    itemIndex = ["인덱스", "상품명", "할인율", "할인가", "원가", "이미지"]
+    itemInfo.append(itemIndex)
 
-itemInfo = []
-itemIndex = ["인덱스", "상품명", "할인율", "할인가", "원가", "이미지"]
-itemInfo.append(itemIndex)
+    indexNum = 0
 
-indexNum = 0
+    # rows 가져오기
+    for page in range (1, pageNum):
+        html = urlopen(url1 + str(categoryList[k]) + url2 + str(page) + url3).read()
 
-# rows 가져오기
-for page in range (1, pageNum):
-    html = urlopen(url1 +str(page)+url2).read()
+        soup = BeautifulSoup(html, 'html.parser')
 
-    soup = BeautifulSoup(html, 'html.parser')
+        total = soup.select('.wrapInfo')
+        itemImage = soup.select('.oPrdtLst .wrapImg img')
+        itemName = soup.select('.wrapInfo .info_title .innerBox .inner a')
+        itemDRate = soup.select('.wrapInfo .info_price .price_discountRate')
+        itemDPrice = soup.select('.wrapInfo .info_price .price_discount b')
+        itemOPrice = soup.select('.wrapInfo .info_price .price_original b')
+        #itemReview = soup.select('.info_group .info_reviewLike')
 
-    total = soup.select('.wrapInfo')
-    itemImage = soup.select('.oPrdtLst .wrapImg img')
-    itemName = soup.select('.wrapInfo .info_title .innerBox .inner a')
-    itemDRate = soup.select('.wrapInfo .info_price .price_discountRate')
-    itemDPrice = soup.select('.wrapInfo .info_price .price_discount b')
-    itemOPrice = soup.select('.wrapInfo .info_price .price_original b')
-    #itemReview = soup.select('.info_group .info_reviewLike')
+        num = 0
 
-    num = 0
-    img = itemImage[0].get("src")
-    print(img)
+        #print(soup)
 
-    
-    for i in total:
-        temp = []
-        temp.append(indexNum)
-        item = itemName[num].get_text()
-        item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
-        item = item.replace('\n', "")
-        item = item.replace('\t', "")
-        temp.append(item)
-        item = itemDRate[num].get_text()
-        item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
-        item = item.replace('\n', "")
-        item = item.replace('\t', "")
-        temp.append(item)
-        item = itemDPrice[num].get_text()
-        item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
-        item = item.replace('\n', "")
-        item = item.replace('\t', "")
-        temp.append(item)
-        item = itemOPrice[num].get_text()
-        item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
-        item = item.replace('\n', "")
-        item = item.replace('\t', "")
-        temp.append(item)
-        item = itemImage[num].get("src")
-        temp.append(item)
-        """item = itemReview[num].get_text()
-        item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
-        item = item.replace('\n', "")
-        item = item.replace('\t', "")
-        temp.append(item)"""
-        num = num + 1
-        indexNum = indexNum + 1
-
-        itemInfo.append(temp)
-
-
-
-"""for i in range(len(itemInfo)):
-    dbData = []
-    for j in range(len(itemInfo[i])):
-        dbData.append(itemInfo[i][j])
-    cur.execute(sql, tuple(dbData.values[i]))"""
         
+        for i in total:
+            temp = []
+            temp.append(indexNum)
+            item = itemName[num].get_text()
+            item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
+            item = item.replace('\n', "")
+            item = item.replace('\t', "")
+            temp.append(item)
+            item = itemDRate[num].get_text()
+            item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
+            item = item.replace('\n', "")
+            item = item.replace('\t', "")
+            temp.append(item)
+            item = itemDPrice[num].get_text()
+            item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
+            item = item.replace('\n', "")
+            item = item.replace('\t', "")
+            temp.append(item)
+            item = itemOPrice[num].get_text()
+            item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
+            item = item.replace('\n', "")
+            item = item.replace('\t', "")
+            temp.append(item)
+            item = itemImage[num].get("src")
+            temp.append(item)
+            """item = itemReview[num].get_text()
+            item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
+            item = item.replace('\n', "")
+            item = item.replace('\t', "")
+            temp.append(item)"""
+            num = num + 1
+            indexNum = indexNum + 1
 
-for i in itemInfo:
-     writer.writerow(i)
-     #cur.execute(sql, itemInfo.values[i])
+            itemInfo.append(temp)
 
-    #print(num)
 
-f.close()
+
+    """for i in range(len(itemInfo)):
+        dbData = []
+        for j in range(len(itemInfo[i])):
+            dbData.append(itemInfo[i][j])
+        cur.execute(sql, tuple(dbData.values[i]))"""
+            
+
+    for i in itemInfo:
+        writer.writerow(i)
+        #cur.execute(sql, itemInfo.values[i])
+
+        #print(num)
+
+    f.close()
 
 """dbData = pd.read_csv("oasis.csv")
 for i in range(len(dbData)):
