@@ -6,6 +6,9 @@ from urllib.parse import quote_plus
 from urllib.request import urlopen
 import csv
 
+# 페이지 이차원 리스트
+
+
 url1 = f"https://www.oasis.co.kr/product/list?categoryId=793&page="
 url2 = f"&sort=priority&direction=desc&couponType=&rows=60"
 
