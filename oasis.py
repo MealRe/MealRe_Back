@@ -8,12 +8,12 @@ import csv
 import pandas as pd
 import pymysql
 
-#db = pymysql.connect(host='172.31.35.173', port=3306, user='mealRe',
-#password='Mealre2022!', db='oasis', charset='utf8')
+db = pymysql.connect(host='3.39.101.84', port=22, user='mealRe',
+password='', db='oasis', charset='utf8')
 
-#cur = db.cursor()
+cur = db.cursor()
 
-#sql = 'insert into oasisKor(indexNum, Name, DRate, DPrice, Oprice) values(%, %, %, %, %)'
+sql = 'insert into easyMeal(indexNum, Name, DRate, DPrice, Oprice, itemImg) values(%, %, %, %, %, %)'
 
 """
 가정간편식
@@ -136,10 +136,12 @@ for k in range(0, len(categoryList)):
 
     f.close()
 
-"""dbData = pd.read_csv("oasis.csv")
-for i in range(len(dbData)):
-    cur.execue(sql, tuple(dbData.values[i]))
+dbData = pd.read_csv("oasis0.csv")
 
-#db.commit()
-#db.close()
-"""
+print(dbData)
+
+for i in range(len(dbData)):
+    cur.execute(sql, tuple(dbData.values[i]))
+
+db.commit()
+db.close()
