@@ -8,7 +8,7 @@ import csv
 import pandas as pd
 import pymysql
 
-db = pymysql.connect(host='localhost', user='root', password='720710', db='wingeat', charset='utf8')
+db = pymysql.connect(host='3.39.101.84', user='mealRe', password='', db='wingeat', charset='utf8')
 
 cur = db.cursor()
 
