@@ -8,12 +8,12 @@ import csv
 import pandas as pd
 import pymysql
 
-db = pymysql.connect(host='3.39.101.84', port=22, user='mealRe',
-password='', db='oasis', charset='utf8')
+#db = pymysql.connect(host='3.39.101.84', port=22, user='mealRe',
+#password='', db='oasis', charset='utf8')
 
-cur = db.cursor()
+#cur = db.cursor()
 
-sql = 'insert into easyMeal(indexNum, Name, DRate, DPrice, Oprice, itemImg) values(%, %, %, %, %, %)'
+#sql = 'insert into easyMeal(indexNum, Name, DRate, DPrice, Oprice, itemImg) values(%, %, %, %, %, %)'
 
 """
 가정간편식
@@ -79,12 +79,14 @@ for k in range(0, len(categoryList)):
         itemOPrice = soup.select('.wrapInfo .info_price .price_original b')
         #itemReview = soup.select('.info_group .info_reviewLike')
 
+        print(itemImage[0])
+
         num = 0
 
         #print(soup)
 
         
-        for i in total:
+        for i in range(1):
             temp = []
             temp.append(indexNum)
             item = itemName[num].get_text()
@@ -108,6 +110,7 @@ for k in range(0, len(categoryList)):
             item = item.replace('\t', "")
             temp.append(item)
             item = itemImage[num].get("src")
+            print(item)
             temp.append(item)
             """item = itemReview[num].get_text()
             item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
