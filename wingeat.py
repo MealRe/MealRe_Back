@@ -21,6 +21,18 @@ sql = 'insert into easyMeal(indexNum, Name, DRate, DPrice, Oprice, itemImg) valu
 
 categoryList = [18, 8, 3, 2, 10, 17, 5, 7, 1]
 
+"""
+식단관리: 18
+국/탕/찌개: 8
+구이/볶음: 3
+밀키트: 2
+밥/면: 10
+안주/야식: 17
+분식/튀김: 5
+떡/한과: 7
+베이커리: 1
+"""
+
 url = f"https://www.wingeat.com/categories/"
 
 filenameList = []
