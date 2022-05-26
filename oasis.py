@@ -8,12 +8,32 @@ import csv
 import pandas as pd
 import pymysql
 
-#db = pymysql.connect(host='3.39.101.84', port=22, user='mealRe',
-#password='', db='oasis', charset='utf8')
+db = pymysql.connect(host='localhost', user='root', password='720710', db='oasis', charset='utf8')
 
-#cur = db.cursor()
+cur = db.cursor()
 
-#sql = 'insert into easyMeal(indexNum, Name, DRate, DPrice, Oprice, itemImg) values(%, %, %, %, %, %)'
+sql0 = 'insert into easyMeal values(%s, %s, %s, %s, %s)'
+sql1 = 'insert into insteadBR values(%s, %s, %s, %s, %s)'
+sql2 = 'insert into bestNM values(%s, %s, %s, %s, %s)'
+sql3 = 'insert into momSN values(%s, %s, %s, %s, %s)'
+sql4 = 'insert into korSoup values(%s, %s, %s, %s, %s)'
+sql5 = 'insert into soup values(%s, %s, %s, %s, %s)'
+sql6 = 'insert into bread values(%s, %s, %s, %s, %s)'
+sql7 = 'insert into cereal values(%s, %s, %s, %s, %s)'
+sql8 = 'insert into salad values(%s, %s, %s, %s, %s)'
+
+sqlList = []
+
+sqlList.append(sql0)
+sqlList.append(sql1)
+sqlList.append(sql2)
+sqlList.append(sql3)
+sqlList.append(sql4)
+sqlList.append(sql5)
+sqlList.append(sql6)
+sqlList.append(sql7)
+sqlList.append(sql8)
+
 
 """
 가정간편식
@@ -60,7 +80,7 @@ for k in range(0, len(categoryList)):
         pageNum += 1
 
     itemInfo = []
-    itemIndex = ["인덱스", "상품명", "할인율", "할인가", "원가", "이미지"]
+    itemIndex = ["상품명", "할인율", "할인가", "원가", "이미지"]
     itemInfo.append(itemIndex)
 
     indexNum = 0
@@ -79,16 +99,16 @@ for k in range(0, len(categoryList)):
         itemOPrice = soup.select('.wrapInfo .info_price .price_original b')
         #itemReview = soup.select('.info_group .info_reviewLike')
 
-        print(itemImage[0])
+        #print(itemImage[0])
 
         num = 0
 
         #print(soup)
 
         
-        for i in range(1):
+        for i in range(len(total)):
             temp = []
-            temp.append(indexNum)
+            #temp.append(indexNum)
             item = itemName[num].get_text()
             item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
             item = item.replace('\n', "")
@@ -110,7 +130,7 @@ for k in range(0, len(categoryList)):
             item = item.replace('\t', "")
             temp.append(item)
             item = itemImage[num].get("src")
-            print(item)
+            #print(item)
             temp.append(item)
             """item = itemReview[num].get_text()
             item = item.replace("\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t                \t", "")
@@ -139,12 +159,14 @@ for k in range(0, len(categoryList)):
 
     f.close()
 
-dbData = pd.read_csv("oasis0.csv")
 
-print(dbData)
 
-for i in range(len(dbData)):
-    cur.execute(sql, tuple(dbData.values[i]))
+for i in range(len(categoryList)):
+    dbData = pd.read_csv(filenameList[i])
+
+    for j in range(1, len(dbData)):
+        cur.execute(sqlList[i], tuple(dbData.values[j]))
+
 
 db.commit()
 db.close()
